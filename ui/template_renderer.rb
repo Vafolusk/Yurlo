@@ -1,16 +1,14 @@
 require 'erb'
-require 'term/ansi'
+require 'term'
 
 module UI
   class Template
-    include Term
-
     def initialize(params = {})
       @params = params
     end
 
     def opts(attrs)
-      encode_display_attributes attrs
+      Term.encode_display_attributes attrs
     end
 
     def char_name

@@ -5,9 +5,14 @@ module UI
   class Input
     attr_accessor :handlers
 
+    def shutdown
+      Termios.setattr(STDIN, Termios::TCSANOW, @original_settings)
+    end
+
     def initialize
       @handlers = {}
-      settings = Termios.getattr STDIN
+      settings = Termios.getattr(STDIN)
+      @original_settings = settings.dup
       settings.c_lflag&= ~(Termios::ECHO | Termios::ICANON)
       settings.c_cc[Termios::VMIN] = 1
       Termios.setattr(STDIN, Termios::TCSANOW, settings)
