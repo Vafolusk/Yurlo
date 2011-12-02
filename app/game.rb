@@ -1,3 +1,11 @@
+require 'rubygems'
+require 'term' 
+require 'ui'
+require 'tutorial'
+require 'page'
+require 'title'
+require 'log'
+require 'scroller'
 
 class Game
   attr_accessor :debug
@@ -49,8 +57,12 @@ class Game
     push_page Title.new
   end
 
+  def map
+    push_page Scroller.new
+  end
+
   def begin()
-    title
+    map
     forever do
       @input.process
     end
