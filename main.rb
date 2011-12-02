@@ -12,3 +12,6 @@ ensure
   $game.quit
 end
 
+puts
+puts 'bye!'
+

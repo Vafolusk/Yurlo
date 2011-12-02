@@ -21,8 +21,22 @@ class Page
   end
 
   def draw
-    Term.set_cursor_pos @bbox[:x], @bbox[:y]
-    @template_renderer.render @template_name if @template_name
+    clear_bbox
+
+    if @template_name
+      text = @template_renderer.eval @template_name 
+      lines = text.split "\n"
+
+      x = bbox[:x] + 1
+      y = bbox[:y] + 1
+
+      lines.each do |line|
+        Term.set_cursor_pos x, y
+        printf line
+        y += 1
+      end
+    end
+
     if @border
       draw_border
     end
@@ -52,6 +66,21 @@ class Page
     end
 
     draw_horiz_line bbox[:x], bbox[:y] + h, bbox[:width]
+  end
+
+  def clear_bbox
+    Term.set_display_attributes [Term::RESET]
+    y = bbox[:y]
+    Term.set_cursor_pos bbox[:x], y
+    bbox[:height].times do
+      x = bbox[:x]
+      y += 1
+      bbox[:width].times do 
+        Term.set_cursor_pos x, y
+        x += 1
+        printf ' '
+      end
+    end
   end
 end
 

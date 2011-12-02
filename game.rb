@@ -61,7 +61,6 @@ class Game
     forever do
       @input.process
     end
-    quit
   end
 
   def redraw()

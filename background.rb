@@ -10,7 +10,7 @@ class Background < Page
   end
 
   def begin
-    Term.set_cursor_pos 0, 5
+    Term.set_cursor_pos 0, 6
     st = UI::TypingText.new 'history'
     st.begin
     sleep 1 
@@ -25,6 +25,6 @@ class Background < Page
 
   def exit
     $game.pop_page
-    $game.push_page TitlePage.new
+    $game.push_page Title.new
   end
 end

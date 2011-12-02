@@ -1,5 +1,6 @@
 require 'page'
 require 'background'
+require 'help'
 
 class Title < Page
   def initialize
@@ -13,7 +14,7 @@ class Title < Page
 
   def background
     $game.pop_page
-    page = BackgroundPage.new
+    page = Background.new
     $game.push_page page
     page.begin
   end
@@ -24,8 +25,7 @@ class Title < Page
   end
 
   def help
-    page = Page.new 'help'
-    page.bbox[:x] = 40
+    page = Help.new 
     $game.push_page page
   end
 
