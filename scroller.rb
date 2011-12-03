@@ -3,8 +3,8 @@ require 'entity'
 require 'page'
 require 'term'
 
-VIEW_WIDTH=20
-VIEW_HEIGHT=15
+VIEW_WIDTH=80
+VIEW_HEIGHT=25
 
 class Scroller < Page
   def initialize()
@@ -15,6 +15,11 @@ class Scroller < Page
     @view_width=VIEW_WIDTH
     @view_height=VIEW_HEIGHT
     @objects = []
+
+    @debug_box = Page.new nil
+    @debug_box.bbox = {:x => 55,:y => 1, :width => 24, :height => 7}
+    @debug_box.border = true
+    @debug_show = false
   end
 
   def key_handlers
@@ -22,6 +27,7 @@ class Scroller < Page
       'a' => method(:left),
       's' => method(:down),
       'd' => method(:right),
+      'D' => method(:toggle_debug),
       'q' => method(:quit)}
   end
 
@@ -54,6 +60,24 @@ class Scroller < Page
       end
       draw_y += 1
     end
+
+    if @debug_show
+      draw_debug_box
+    end
+  end
+
+  def draw_debug_box()
+      @debug_box.draw 
+      x = @debug_box.bbox[:x] + 2
+      y = @debug_box.bbox[:y] + 2
+
+      Term.set_cursor_pos x, y
+      u_x, u_y = u_position
+      printf "u are here:  %d, %d", u_x, u_y
+      Term.set_cursor_pos x, y + 1
+      printf "cell height: %.4f", @world.get_cell(u_x, u_y).height
+      x, y = worldToView(u_x, u_y)
+      Term.set_cursor_pos x, y
   end
 
   def draw_cell(cell, x, y)
@@ -67,18 +91,43 @@ class Scroller < Page
     end
 
     Term.set_cursor_pos x, y
-
+    ch = ' '
     if cell.height <= 0.0
-      Term.set_display_attributes [Term::BG_BLUE]
-    elsif cell.height <  0.4
-      Term.set_display_attributes [Term::BG_GREEN, Term::DIM]
+      Term.set_display_attributes [Term::FG_GREEN, Term::BG_BLUE]
+      ch = ' '
+    elsif cell.height <  0.1
+      Term.set_display_attributes [Term::BG_YELLOW, Term::FG_RED]
+      ch = '`'
+    elsif cell.height < 0.2
+      Term.set_display_attributes [Term::FG_GREEN, Term::BG_YELLOW]
+      ch = '.'
+    elsif cell.height < 0.3
+      Term.set_display_attributes [Term::FG_GREEN, Term::BG_YELLOW]
+      ch = '^'
+    elsif cell.height < 0.4
+      Term.set_display_attributes [Term::BG_YELLOW, Term::FG_CYAN]
+      ch = '~'
+    elsif cell.height < 0.5
+      Term.set_display_attributes [Term::BG_GREEN, Term::FG_YELLOW]
+      ch = '%'
+    elsif cell.height < 0.6
+      Term.set_display_attributes [Term::FG_CYAN, Term::BG_GREEN]
+      ch = 'v'
     elsif cell.height < 0.7
-      Term.set_display_attributes [Term::BG_CYAN, Term::DIM]
+      Term.set_display_attributes [Term::FG_WHITE, Term::BG_CYAN]
+      ch = '"'
+    elsif cell.height < 0.8
+      Term.set_display_attributes [Term::BG_WHITE, Term::FG_CYAN]
+      ch = "#"
+    elsif cell.height < 0.9
+      Term.set_display_attributes [Term::BG_WHITE, Term::FG_CYAN]
+      ch = '*'
     else
-      Term.set_display_attributes [Term::BG_WHITE, Term::DIM]
+      Term.set_display_attributes [Term::BG_WHITE, Term::FG_CYAN]
+      ch = '*'
     end
 
-    printf ' '
+    printf ch 
 
     $game.log.info 'cell.height=' +  cell.height.to_s
   end
@@ -120,22 +169,18 @@ class Scroller < Page
 
   def scrollUp() 
     @view_y = [@view_y - 1, 0].max 
-    draw()
   end
 
   def scrollDown()
     @view_y = [@view_y + 1, WORLD_HEIGHT - @view_height].min
-    draw()
   end
 
   def scrollLeft()
     @view_x = [@view_x - 1, 0].max
-    draw()
   end
 
   def scrollRight()
     @view_x = [@view_x + 1, WORLD_WIDTH - @view_width].min
-    draw()
   end
 
   def worldToView(world_x, world_y)
@@ -150,7 +195,17 @@ class Scroller < Page
 
   def move(x, y)
     if @world.isLegalMove(x, y, @world.u)
+      oldx, oldy = u_position
       @world.moveEntity(x, y, @world.u)
+      #draw new location
+      cell = @world.get_cell x, y
+      x, y = worldToView(x, y)
+      draw_cell(cell, x, y)
+      #redraw old location
+      cell = @world.get_cell oldx, oldy
+      $game.log.info 'move: ' + oldx.to_s + ' ' +  oldy.to_s + ' ' + cell.entities.length.to_s
+      oldx, oldy = worldToView(oldx, oldy)
+      draw_cell(cell, oldx, oldy)
     end
 
     endTurn
@@ -187,7 +242,8 @@ class Scroller < Page
   def endTurn()
     $game.log.info 'ending turn'
     updateScroll()
-    $game.redraw
+    x, y = u_position
+    Term.set_cursor_pos x, y
   end
 
   def updateScroll()
@@ -198,15 +254,35 @@ class Scroller < Page
     x2 = x1 + @view_width/2
     y2 = y1 + @view_height/2
 
+    do_draw = false
     if x < x1
       scrollLeft()
+      do_draw = true
+      $game.log.info 'x < x1'
     elsif x > x2
       scrollRight()
+      do_draw = true
+      $game.log.info 'x>x2'
     end
     if y < y1
-        scrollUp()
+      scrollUp()
+      do_draw = true
+      $game.log.info 'y>y1'
     elsif y > y2
-        scrollDown()
+      scrollDown()
+      do_draw = true
+      $game.log.info 'y>y2'
+    end
+
+    if do_draw
+      $game.redraw
     end
   end
+
+  def toggle_debug
+    @debug_show = !@debug_show
+    draw_debug_box if @debug_show
+    $game.redraw unless @debug_show
+  end
+
 end

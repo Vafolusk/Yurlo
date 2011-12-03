@@ -52,7 +52,7 @@ class Page
 
   def draw_border
     draw_horiz_line bbox[:x], bbox[:y], bbox[:width]
-    h = bbox[:height] - 2
+    h = bbox[:height] 
 
     y = bbox[:y] + 1
     h.times do

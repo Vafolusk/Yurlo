@@ -1,6 +1,6 @@
 require 'entity'
 
-WORLD_WIDTH=50
+WORLD_WIDTH=100
 WORLD_HEIGHT=WORLD_WIDTH
 SEA_LEVEL = 0.5
 
@@ -41,7 +41,7 @@ class World
   end
 
   def triggerEvents(x, y, entity)
-    printf '%s moved to %d %d',  entity.name, x, y
+    #printf '%s moved to %d %d',  entity.name, x, y
   end
 
   def findEntity(entity)
@@ -49,11 +49,12 @@ class World
   end
 
   def random()
+    rand
     @randoms.shift
   end
 
   def initialize
-    f = open('/tmp/random_numbers.txt')
+    f = open('random_numbers.txt')
     @randoms = []
     f.each {|i| @randoms.push i.to_f} 
 
@@ -137,7 +138,7 @@ class World
       end
       sum = 0
       height_values.each {|value| sum += value}
-      average_height = sum/height_values.size
+      average_height = sum.to_f/height_values.length
       x = start[0] + half_stride
       y = start[1]
       r = rangeMin + random() * (rangeMax - rangeMin)
@@ -267,7 +268,7 @@ class World
         if lonely
           @world_data[x][y].height = 0.0
         end
-        $game.log.info '_erode:' + @world_data[x][y].height.to_s
+        $game.log.info '_erode:' + (y * WORLD_WIDTH + x).to_s + ',' + @world_data[x][y].height.to_s
       end
     end
   end
