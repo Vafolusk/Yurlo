@@ -206,6 +206,9 @@ class Scroller < Page
       $game.log.info 'move: ' + oldx.to_s + ' ' +  oldy.to_s + ' ' + cell.entities.length.to_s
       oldx, oldy = worldToView(oldx, oldy)
       draw_cell(cell, oldx, oldy)
+      if @debug_show
+        draw_debug_box
+      end
     end
 
     endTurn
@@ -243,39 +246,33 @@ class Scroller < Page
     $game.log.info 'ending turn'
     updateScroll()
     x, y = u_position
+    x, y = worldToView x, y
     Term.set_cursor_pos x, y
   end
 
   def updateScroll()
-    x, y = u_position
-    x, y = worldToView(x, y)
-    x1 = @view_width/4
-    y1 = @view_height/4
-    x2 = x1 + @view_width/2
-    y2 = y1 + @view_height/2
+    u_x, u_y = u_position
+    x, y = worldToView(u_x, u_y)
 
-    do_draw = false
-    if x < x1
+    do_redraw = false
+    if x == 0
       scrollLeft()
-      do_draw = true
-      $game.log.info 'x < x1'
-    elsif x > x2
+      do_redraw = true
+    elsif x == @view_width
       scrollRight()
-      do_draw = true
-      $game.log.info 'x>x2'
+      do_redraw = true
     end
-    if y < y1
+    if y == 0
       scrollUp()
-      do_draw = true
-      $game.log.info 'y>y1'
-    elsif y > y2
+      do_redraw = true
+    elsif y == @view_height
       scrollDown()
-      do_draw = true
-      $game.log.info 'y>y2'
+      do_redraw = true
     end
 
-    if do_draw
+    if do_redraw
       $game.redraw
+      Term.set_cursor_pos x, y
     end
   end
 

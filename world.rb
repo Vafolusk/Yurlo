@@ -50,7 +50,7 @@ class World
 
   def random()
     rand
-    @randoms.shift
+    #@randoms.shift
   end
 
   def initialize
