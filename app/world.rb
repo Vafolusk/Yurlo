@@ -1,5 +1,3 @@
-require 'entity'
-
 WORLD_WIDTH=128
 WORLD_HEIGHT=WORLD_WIDTH
 SEA_LEVEL = 0.5

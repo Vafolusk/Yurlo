@@ -1,8 +1,3 @@
-require 'world'
-require 'entity'
-require 'page'
-require 'term'
-
 VIEW_WIDTH=80
 VIEW_HEIGHT=25
 
