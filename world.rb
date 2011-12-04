@@ -59,7 +59,7 @@ class World
     f = open('random_numbers.txt')
     @randoms = []
     f.each {|i| @randoms.push i.to_f} 
-    @use_rand = false
+    @use_rand = true
 
     @entityIndex = {}
     @u = nil
@@ -197,8 +197,6 @@ class World
     while stride > 1
       while y2 < WORLD_HEIGHT
         while x2 < WORLD_WIDTH
-          $game.log.info 'createSeaFloor: stride:' + stride.to_s 
-          $game.log.info 'createSeaFloor: x1,y1,x2,y2:' + [x1, y1, x2, y2].join(',').to_s
           _diamond(x1, y1, x2, y2, rangeMin, rangeMax)
           _square(x1, y1, x2, y2, rangeMin, rangeMax)
           x1 += stride
@@ -220,7 +218,7 @@ class World
       rangeMax = halfNewRange
     end
     _normalize()
-    _erode()
+    #_erode()
     dump('cell_height')
   end
 
@@ -284,7 +282,6 @@ class World
         if lonely
           @world_data[x][y].height = 0.0
         end
-        $game.log.info '_erode:' + (y * WORLD_WIDTH + x).to_s + ',' + @world_data[x][y].height.to_s
       end
     end
   end

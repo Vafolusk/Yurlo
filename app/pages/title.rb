@@ -2,7 +2,7 @@
 class Title < Page
   def initialize
     super 'title'
-    @handlers = {'t' => method(:tutorial), 'h' => method(:help), 'B' => method(:background), 'q' => method(:quit)}
+    @handlers = {'n' => method(:map), 't' => method(:tutorial), 'h' => method(:help), 'B' => method(:background), 'q' => method(:quit)}
   end
 
   def key_handlers
@@ -28,5 +28,9 @@ class Title < Page
 
   def quit
     $game.quit
+  end
+
+  def map
+    $game.map
   end
 end

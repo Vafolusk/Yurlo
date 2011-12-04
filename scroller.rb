@@ -32,20 +32,11 @@ class Scroller < Page
   end
 
   def quit
-    $game.quit
-  end
-
-  def clear_view()
-    @objects.each do |id|
-      # ?
-    end
-
-    @objects = []
+    $game.pop_page
   end
 
   def draw()
     super
-    clear_view()
     endx = [@view_x + @view_width, WORLD_WIDTH-1].min
     endy = [@view_y + @view_height, WORLD_HEIGHT-1].min
 
@@ -92,21 +83,18 @@ class Scroller < Page
 
     Term.set_cursor_pos x, y
     ch = ' '
-    if cell.height <= 0.0
+    if cell.height <= 0.1
+      Term.set_display_attributes [Term::FG_WHITE, Term::BG_BLUE]
+      ch = '~'
+    elsif cell.height < 0.2
       Term.set_display_attributes [Term::FG_GREEN, Term::BG_BLUE]
       ch = ' '
-    elsif cell.height <  0.1
-      Term.set_display_attributes [Term::BG_YELLOW, Term::FG_RED]
-      ch = '`'
-    elsif cell.height < 0.2
-      Term.set_display_attributes [Term::FG_GREEN, Term::BG_YELLOW]
-      ch = '.'
     elsif cell.height < 0.3
-      Term.set_display_attributes [Term::FG_GREEN, Term::BG_YELLOW]
-      ch = '^'
+      Term.set_display_attributes [Term::FG_GREEN, Term::BG_BLUE]
+      ch = ' '
     elsif cell.height < 0.4
-      Term.set_display_attributes [Term::BG_YELLOW, Term::FG_CYAN]
-      ch = '~'
+      Term.set_display_attributes [Term::FG_CYAN, Term::BG_YELLOW]
+      ch = '#'
     elsif cell.height < 0.5
       Term.set_display_attributes [Term::BG_GREEN, Term::FG_YELLOW]
       ch = '%'

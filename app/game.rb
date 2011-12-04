@@ -58,11 +58,14 @@ class Game
   end
 
   def map
+    trans = UI::Transition.new
+    trans.falling_curtain
+    trans.rising_curtain
     push_page Scroller.new
   end
 
   def begin()
-    map
+    title
     forever do
       @input.process
     end
