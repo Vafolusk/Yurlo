@@ -1,0 +1,10 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    termios (0.9.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  termios

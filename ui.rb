@@ -1,6 +1,0 @@
-require 'ui/arrow'
-require 'ui/input'
-require 'ui/scrolling_text'
-require 'ui/template_renderer'
-require 'ui/transition'
-require 'ui/typing_text'

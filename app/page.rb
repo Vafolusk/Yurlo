@@ -1,12 +1,10 @@
-require 'term'
-require 'ui'
 
 class Page
   attr_accessor :bbox
   attr_accessor :border
 
   def key_handlers
-    {'b', method(:quit)}
+    {'b' => method(:quit)}
   end
 
   def quit

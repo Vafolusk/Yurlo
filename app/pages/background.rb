@@ -1,6 +1,3 @@
-require 'page'
-require 'term'
-
 class Background < Page
 
   def initialize

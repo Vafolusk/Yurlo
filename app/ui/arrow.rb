@@ -1,4 +1,3 @@
-require 'term'
 
 module UI
   class Arrow

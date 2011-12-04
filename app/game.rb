@@ -1,10 +1,3 @@
-require 'rubygems'
-require 'term' 
-require 'ui'
-require 'tutorial'
-require 'page'
-require 'title'
-require 'log'
 
 class Game
   attr_accessor :debug

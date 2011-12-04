@@ -1,7 +1,3 @@
-require 'game'
-require 'ui'
-require 'term'
-require 'page'
 
 class Help < Page
 
