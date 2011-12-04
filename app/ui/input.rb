@@ -1,5 +1,5 @@
 require 'rubygems'
-require "termios"
+require 'termios'
 
 module UI
   class Input

@@ -1,5 +1,4 @@
 require 'erb'
-require 'term'
 
 module UI
   class Template

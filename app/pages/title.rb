@@ -1,6 +1,3 @@
-require 'page'
-require 'background'
-require 'help'
 
 class Title < Page
   def initialize
