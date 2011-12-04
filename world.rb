@@ -48,14 +48,18 @@ class World
   end
 
   def random()
-    #rand
-    @randoms.shift
+    if @use_rand
+      rand
+    else
+      @randoms.shift
+    end
   end
 
   def initialize
     f = open('random_numbers.txt')
     @randoms = []
     f.each {|i| @randoms.push i.to_f} 
+    @use_rand = false
 
     @entityIndex = {}
     @u = nil
