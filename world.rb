@@ -1,6 +1,6 @@
 require 'entity'
 
-WORLD_WIDTH=100
+WORLD_WIDTH=128
 WORLD_HEIGHT=WORLD_WIDTH
 SEA_LEVEL = 0.5
 
@@ -17,7 +17,6 @@ end
 class World
   attr_accessor :world_data, :u
   def get_cell(x, y)
-    $game.log.info 'get_cell; ' + x.to_s 
     @world_data[x][y]
   end
 
@@ -49,8 +48,8 @@ class World
   end
 
   def random()
-    rand
-    #@randoms.shift
+    #rand
+    @randoms.shift
   end
 
   def initialize
@@ -58,14 +57,12 @@ class World
     @randoms = []
     f.each {|i| @randoms.push i.to_f} 
 
-    $game.log.info rand().to_s
     @entityIndex = {}
     @u = nil
     _createWorld()
   end
 
   def isLegalMove(x, y, entity)
-    $game.log.info 'islgal;' + x.to_s
     if x < 0 or x >= WORLD_WIDTH or y < 0 or y >= WORLD_WIDTH:
       return false
     end
@@ -108,33 +105,34 @@ class World
     ]
 
     start_points.each do |start|
-      height_values = [0] * 4
+      #height_values = [0] * 4
+      height_values = []
       x = start[0]
       y = start[1]
 
       if x >= 0
-        height_values[0] = @world_data[x][y].height
+        height_values.push @world_data[x][y].height
       end
 
       x = start[0] + half_stride
       y = start[1] - half_stride
 
       if y >= 0
-        height_values[1] = @world_data[x][y].height
+        height_values.push @world_data[x][y].height
       end
 
       x = start[0] + stride
       y = start[1] 
 
       if x < WORLD_WIDTH	
-        height_values[2] =  @world_data[x][y].height
+        height_values.push @world_data[x][y].height
       end
 
       x = start[0] + half_stride
       y = start[1] + half_stride
 
       if y < WORLD_HEIGHT
-        height_values[3] = @world_data[x][y].height
+        height_values.push @world_data[x][y].height
       end
       sum = 0
       height_values.each {|value| sum += value}
@@ -142,7 +140,8 @@ class World
       x = start[0] + half_stride
       y = start[1]
       r = rangeMin + random() * (rangeMax - rangeMin)
-      @world_data[x][y].height = average_height + r
+      height = average_height + r
+      @world_data[x][y].height = height
       @world_data[x][y].name = 'B'
     end
   end
@@ -163,7 +162,8 @@ class World
 
     @world_data[cx][cy].name = 'B'
     r = rangeMin +  random() * (rangeMax - rangeMin)
-    @world_data[cx][cy].height = avg + r
+    height = avg + r
+    @world_data[cx][cy].height = height
   end
 
 
@@ -173,24 +173,28 @@ class World
 
     rangeMax = 1.0
     rangeMin = -1.0
-    w = WORLD_WIDTH-1
-    h = WORLD_HEIGHT-1
+    w = WORLD_WIDTH
+    h = WORLD_HEIGHT
     x1 = 0
     y1 = 0
-    x2 = w
-    y2 = h
+    x2 = w - 1
+    y2 = h - 1 
 
-    @world_data[x1][y1].name = 'B'
-    @world_data[x2][y1].name= 'B'
-    @world_data[x1][y2].name = 'B'
-    @world_data[x2][y2].name = 'B'
+    range = rangeMax - rangeMin
+    # assign corners of world some random heighs from min to max
+    @world_data[x1][y1].height = rangeMin + random * rangeMax 
+    @world_data[x2][y1].height = rangeMin + random * rangeMax 
+    @world_data[x1][y2].height = rangeMin + random * rangeMax 
+    @world_data[x2][y2].height = rangeMin + random * rangeMax 
 
-    stride = w
+    stride = WORLD_WIDTH
     done = false	
 
     while stride > 1
       while y2 < WORLD_HEIGHT
         while x2 < WORLD_WIDTH
+          $game.log.info 'createSeaFloor: stride:' + stride.to_s 
+          $game.log.info 'createSeaFloor: x1,y1,x2,y2:' + [x1, y1, x2, y2].join(',').to_s
           _diamond(x1, y1, x2, y2, rangeMin, rangeMax)
           _square(x1, y1, x2, y2, rangeMin, rangeMax)
           x1 += stride
@@ -202,7 +206,7 @@ class World
         y2 += stride
       end
 
-      stride /= 2
+      stride /= 2 
       x1 = y1 = 0
       x2 = y2 = stride
       newRange = (rangeMax - rangeMin) * (2 ** -roughness)
@@ -211,9 +215,17 @@ class World
       rangeMin = -halfNewRange
       rangeMax = halfNewRange
     end
-
     _normalize()
     _erode()
+    dump('cell_height')
+  end
+
+  def dump(name)
+    WORLD_HEIGHT.times do |y|
+      WORLD_WIDTH.times do |x|
+        $game.log.info name + ':' + (y * WORLD_WIDTH + x).to_s + ',' + @world_data[x][y].height.to_s
+      end
+    end
   end
 
   def _normalize()
