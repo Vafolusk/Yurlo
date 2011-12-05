@@ -18,10 +18,10 @@ class Scroller < Page
   end
 
   def key_handlers
-    {'w' => method(:up),
-      'a' => method(:left),
-      's' => method(:down),
-      'd' => method(:right),
+    {'k' => method(:up),
+      'h' => method(:left),
+      'j' => method(:down),
+      'l' => method(:right),
       'D' => method(:toggle_debug),
       'q' => method(:quit)}
   end
