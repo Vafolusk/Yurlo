@@ -1,10 +1,10 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    termios (0.9.4)
+    ncurses (0.9.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  termios
+  ncurses

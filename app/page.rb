@@ -1,7 +1,7 @@
-
 class Page
   attr_accessor :bbox
   attr_accessor :border
+  attr_accessor :window
 
   def key_handlers
     {'b' => method(:quit)}
@@ -19,8 +19,6 @@ class Page
   end
 
   def draw
-    clear_bbox
-
     if @template_name
       text = @template_renderer.eval @template_name 
       lines = text.split "\n"

@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'ncurses'
+
 VIEW_WIDTH=80
 VIEW_HEIGHT=25
 
@@ -9,11 +12,8 @@ class Scroller < Page
     @view_y = 0
     @view_width=VIEW_WIDTH
     @view_height=VIEW_HEIGHT
-    @objects = []
-
-    @debug_box = Page.new nil
-    @debug_box.bbox = {:x => 55,:y => 1, :width => 24, :height => 7}
-    @debug_box.border = true
+    @window = Ncurses.newwin(VIEW_HEIGHT, VIEW_WIDTH, 0, 0)
+    @debug_box = nil
     @debug_show = false
   end
 
@@ -23,14 +23,12 @@ class Scroller < Page
       'j' => method(:down),
       'l' => method(:right),
       'D' => method(:toggle_debug),
-      'b' => method(:blather),
       'q' => method(:quit)}
   end
 
   def quit
     $game.pop_page
   end
-
   def draw()
     super
     endx = [@view_x + @view_width, WORLD_WIDTH-1].min
@@ -48,70 +46,69 @@ class Scroller < Page
       draw_y += 1
     end
 
-    if @debug_show
+    @window.refresh
+
+    if @debug_box
       draw_debug_box
     end
   end
 
   def draw_debug_box()
-      @debug_box.draw 
-      x = @debug_box.bbox[:x] + 2
-      y = @debug_box.bbox[:y] + 2
-
-      Term.set_cursor_pos x, y
+      @debug_box.clear
       u_x, u_y = u_position
-      printf "u are here:  %d, %d", u_x, u_y
-      Term.set_cursor_pos x, y + 1
-      printf "cell height: %.4f", @world.get_cell(u_x, u_y).height
-      x, y = worldToView(u_x, u_y)
-      Term.set_cursor_pos x, y
+      @debug_box.mvaddstr 0, 0, "u are here:  #{u_x.to_s}, #{u_y.to_s}"
+      s = sprintf "cell height: %.4f", @world.get_cell(u_x, u_y).height
+      @debug_box.mvaddstr(1, 0, s)
+      @debug_box.refresh
+  end
+
+  def set_color(color)
+    @window.color_set(color, nil)
   end
 
   def draw_cell(cell, x, y)
 
     if cell.entities.length > 0
       $game.log.info 'entities at ' + x.to_s + ',' + y.to_s
-      Term.set_display_attributes [Term::FG_WHITE, Term::BG_BLACK]
-      Term.set_cursor_pos x, y
-      printf '@'
+      @window.color_set(Palette::WHITE_ON_BLACK, nil)
+      @window.mvaddstr(y, x, '@')
       return
     end
 
-    Term.set_cursor_pos x, y
     ch = ' '
     if cell.height <= 0.1
-      Term.set_display_attributes [Term::FG_WHITE, Term::BG_BLUE]
+      set_color Palette::WHITE_ON_BLUE
       ch = '~'
     elsif cell.height < 0.2
-      Term.set_display_attributes [Term::FG_GREEN, Term::BG_BLUE]
+      set_color Palette::GREEN_ON_BLUE
       ch = ' '
     elsif cell.height < 0.3
-      Term.set_display_attributes [Term::FG_GREEN, Term::BG_BLUE]
+      set_color Palette::GREEN_ON_BLUE
       ch = ' '
     elsif cell.height < 0.4
-      Term.set_display_attributes [Term::FG_CYAN, Term::BG_YELLOW]
+      set_color Palette::CYAN_ON_YELLOW
       ch = '#'
     elsif cell.height < 0.5
-      Term.set_display_attributes [Term::BG_GREEN, Term::FG_YELLOW]
+      set_color Palette::GREEN_ON_YELLOW
       ch = '%'
     elsif cell.height < 0.6
-      Term.set_display_attributes [Term::FG_CYAN, Term::BG_GREEN]
+      set_color Palette::CYAN_ON_GREEN
       ch = 'v'
     elsif cell.height < 0.7
-      Term.set_display_attributes [Term::FG_WHITE, Term::BG_CYAN]
+      set_color Palette::WHITE_ON_CYAN
       ch = '"'
     elsif cell.height < 0.8
-      Term.set_display_attributes [Term::BG_WHITE, Term::FG_CYAN]
+      set_color Palette::CYAN_ON_WHITE
       ch = "#"
     elsif cell.height < 0.9
-      Term.set_display_attributes [Term::BG_WHITE, Term::FG_CYAN]
+      set_color Palette::CYAN_ON_WHITE
       ch = '*'
     else
-      Term.set_display_attributes [Term::BG_WHITE, Term::FG_CYAN]
+      set_color Palette::CYAN_ON_WHITE
       ch = '*'
     end
 
-    printf ch 
+    @window.mvaddstr y, x, ch
 
     $game.log.info 'cell.height=' +  cell.height.to_s
   end
@@ -190,9 +187,7 @@ class Scroller < Page
       $game.log.info 'move: ' + oldx.to_s + ' ' +  oldy.to_s + ' ' + cell.entities.length.to_s
       oldx, oldy = worldToView(oldx, oldy)
       draw_cell(cell, oldx, oldy)
-      if @debug_show
-        draw_debug_box
-      end
+      draw_debug_box if @debug_box
     end
 
     endTurn
@@ -229,9 +224,9 @@ class Scroller < Page
   def endTurn()
     $game.log.info 'ending turn'
     updateScroll()
-    x, y = u_position
-    x, y = worldToView x, y
-    Term.set_cursor_pos x, y
+    #x, y = u_position
+    #x, y = worldToView x, y
+    #Term.set_cursor_pos x, y
   end
 
   def updateScroll()
@@ -256,14 +251,19 @@ class Scroller < Page
 
     if do_redraw
       $game.redraw
-      Term.set_cursor_pos x, y
+      #Term.set_cursor_pos x, y
     end
   end
 
   def toggle_debug
-    @debug_show = !@debug_show
-    draw_debug_box if @debug_show
-    $game.redraw unless @debug_show
+    if not @debug_box
+      @debug_box = Ncurses.newwin 7, 24, 1, 55
+      draw_debug_box 
+    else
+      @debug_box.delwin
+      @debug_box = nil
+      $game.redraw
+    end
   end
 
 end

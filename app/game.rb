@@ -1,12 +1,11 @@
 require 'rubygems'
+require 'ncurses'
 
 class Game
   attr_accessor :debug
-  attr_accessor :win
 
   def initialize
-    @ui = NcursesUI.new
-    @input = UI::Input.new
+    @input = Input.new
     @page_stack = []
 
     @base_handlers = {}
@@ -16,11 +15,26 @@ class Game
     @done = false
     debug = true
     @log = Log.new
+
+    init_ncurses
+  end
+
+  def init_ncurses
+    Ncurses.initscr
+    Ncurses.cbreak
+    Ncurses.noecho
+    Ncurses.start_color
+
+    @palette = Palette.new
+  end
+
+  def shutdown_ncurses
+    Ncurses.endwin 
   end
 
   def quit
-    @input.shutdown
-    @ui.shutdown
+    $game.log.info 'shutting down...'
+    shutdown_ncurses
     @done = true
   end
 
@@ -40,6 +54,8 @@ class Game
     @page_stack.pop
     if @page_stack.size > 0
       @input.handlers = @page_stack.last.key_handlers
+    else
+      @input.handlers = @base_handlers
     end
     redraw
   end
@@ -58,7 +74,11 @@ class Game
   def begin()
     map
     forever do
-      @input.process
+      if @page_stack.length > 0
+        @input.process @page_stack.last.window
+      else
+        @input.process nil
+      end
     end
   end
 
