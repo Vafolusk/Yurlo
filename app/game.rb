@@ -2,8 +2,10 @@ require 'rubygems'
 
 class Game
   attr_accessor :debug
+  attr_accessor :win
 
   def initialize
+    @ui = NcursesUI.new
     @input = UI::Input.new
     @page_stack = []
 
@@ -18,7 +20,7 @@ class Game
 
   def quit
     @input.shutdown
-    Term::set_display_attributes [Term::RESET]
+    @ui.shutdown
     @done = true
   end
 
@@ -31,8 +33,6 @@ class Game
   def push_page page
     @page_stack.push page
     @input.handlers = @page_stack.last.key_handlers
-    Term.set_cursor_pos 0, 0
-    Term.erase_screen
     redraw
   end
 
@@ -41,8 +41,6 @@ class Game
     if @page_stack.size > 0
       @input.handlers = @page_stack.last.key_handlers
     end
-    Term.set_cursor_pos 0, 0
-    Term.erase_screen
     redraw
   end
 
@@ -51,23 +49,20 @@ class Game
   end
 
   def map
-    trans = UI::Transition.new
-    trans.falling_curtain
-    trans.rising_curtain
+    #trans = UI::Transition.new
+    #trans.falling_curtain
+    #trans.rising_curtain
     push_page Scroller.new
   end
 
   def begin()
-    title
+    map
     forever do
       @input.process
     end
   end
 
   def redraw()
-    Term.set_cursor_pos 0, 0
-    Term.erase_screen
-    Term.reset
     @page_stack.each do |page|
       page.draw
     end

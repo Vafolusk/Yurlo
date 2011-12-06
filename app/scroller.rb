@@ -23,6 +23,7 @@ class Scroller < Page
       'j' => method(:down),
       'l' => method(:right),
       'D' => method(:toggle_debug),
+      'b' => method(:blather),
       'q' => method(:quit)}
   end
 
@@ -151,19 +152,19 @@ class Scroller < Page
   end
 
   def scrollUp() 
-    @view_y = [@view_y - 1, 0].max 
+    @view_y = [@view_y - 25, 0].max 
   end
 
   def scrollDown()
-    @view_y = [@view_y + 1, WORLD_HEIGHT - @view_height].min
+    @view_y = [@view_y + 25, WORLD_HEIGHT - @view_height].min
   end
 
   def scrollLeft()
-    @view_x = [@view_x - 1, 0].max
+    @view_x = [@view_x - 80, 0].max
   end
 
   def scrollRight()
-    @view_x = [@view_x + 1, WORLD_WIDTH - @view_width].min
+    @view_x = [@view_x + 80, WORLD_WIDTH - @view_width].min
   end
 
   def worldToView(world_x, world_y)
@@ -241,14 +242,14 @@ class Scroller < Page
     if x == 0
       scrollLeft()
       do_redraw = true
-    elsif x == @view_width
+    elsif x == @view_width + 1
       scrollRight()
       do_redraw = true
     end
     if y == 0
       scrollUp()
       do_redraw = true
-    elsif y == @view_height
+    elsif y == @view_height + 1
       scrollDown()
       do_redraw = true
     end
