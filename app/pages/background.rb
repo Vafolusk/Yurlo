@@ -2,6 +2,7 @@ class Background < Page
 
   def initialize
     super 'background'
+    @window = Ncurses.newwin 25, 80, 0, 0
     Term.set_cursor_pos 0,0
     Term.erase_screen
   end

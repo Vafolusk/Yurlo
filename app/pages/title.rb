@@ -3,6 +3,7 @@ class Title < Page
   def initialize
     super 'title'
     @handlers = {'n' => method(:map), 't' => method(:tutorial), 'h' => method(:help), 'B' => method(:background), 'q' => method(:quit)}
+    @window = Ncurses.newwin 25, 80, 0, 0
   end
 
   def key_handlers

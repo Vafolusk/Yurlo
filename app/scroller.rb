@@ -237,19 +237,20 @@ class Scroller < Page
     if x == 0
       scrollLeft()
       do_redraw = true
-    elsif x == @view_width + 1
+    elsif x == @view_width 
       scrollRight()
       do_redraw = true
     end
     if y == 0
       scrollUp()
       do_redraw = true
-    elsif y == @view_height + 1
+    elsif y == @view_height
       scrollDown()
       do_redraw = true
     end
 
     if do_redraw
+      draw
       $game.redraw
       #Term.set_cursor_pos x, y
     end

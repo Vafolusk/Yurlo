@@ -8,12 +8,11 @@ class Help < Page
   def initialize
     super 'help'
     self.border = true
-    self.bbox = { :x => 30, :y => 5, :width => 20, :height => 10 }
+    @window = Ncurses.newwin 10, 20, 5, 30
   end
 
   def exit
     $game.log.info 'exiting help'
     $game.pop_page
   end
-
 end

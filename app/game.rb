@@ -47,11 +47,12 @@ class Game
   def push_page page
     @page_stack.push page
     @input.handlers = @page_stack.last.key_handlers
-    redraw
+    page.draw
   end
 
   def pop_page
-    @page_stack.pop
+    page = @page_stack.pop
+    page.window.delwin if page.window
     if @page_stack.size > 0
       @input.handlers = @page_stack.last.key_handlers
     else
@@ -72,7 +73,7 @@ class Game
   end
 
   def begin()
-    map
+    title
     forever do
       if @page_stack.length > 0
         @input.process @page_stack.last.window
@@ -82,9 +83,9 @@ class Game
     end
   end
 
-  def redraw()
+  def redraw
     @page_stack.each do |page|
-      page.draw
+      page.window.redrawwin if page.window
     end
   end
 

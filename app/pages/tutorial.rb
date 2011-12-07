@@ -8,12 +8,7 @@ class Tutorial < Page
     super 'test_template'
     UI::Transition.new.falling_curtain
     UI::Transition.new.rising_curtain
-  end
-
-  def begin
-    Term.reset
-    tr = UI::TemplateRenderer.new
-    tr.render('test_template')
+    @window = Ncurses.newwin 25, 80, 0, 0
   end
 
   def exit

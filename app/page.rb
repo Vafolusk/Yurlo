@@ -14,23 +14,13 @@ class Page
   def initialize(template_name)
     @bbox = {:x =>1, :y => 1, :width => 80, :height => 25}
     @border = false
-    @template_renderer = UI::TemplateRenderer.new
+    @template_renderer = TemplateRenderer.new
     @template_name = template_name
   end
 
   def draw
     if @template_name
-      text = @template_renderer.eval @template_name 
-      lines = text.split "\n"
-
-      x = bbox[:x] + 1
-      y = bbox[:y] + 1
-
-      lines.each do |line|
-        Term.set_cursor_pos x, y
-        printf line
-        y += 1
-      end
+      @template_renderer.render window, @template_name
     end
 
     if @border
@@ -49,6 +39,10 @@ class Page
   end
 
   def draw_border
+    Ncurses.wborder(window, ?|, ?|, ?-, ?-, ?+, ?+, ?+, ?+)
+  end
+
+  def old_draw_border
     draw_horiz_line bbox[:x], bbox[:y], bbox[:width]
     h = bbox[:height] 
 
