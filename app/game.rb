@@ -66,6 +66,11 @@ class Game
   end
 
   def map
+    text = ScrollingText.new 'intro'
+    window = Ncurses.newwin(25, 80, 0, 0)
+    text.begin window
+    window.delwin
+
     trans = Transition.new
     trans.falling_curtain
     push_page Scroller.new
