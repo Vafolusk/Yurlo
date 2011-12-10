@@ -224,9 +224,9 @@ class Scroller < Page
   def endTurn()
     $game.log.info 'ending turn'
     updateScroll()
-    #x, y = u_position
-    #x, y = worldToView x, y
-    #Term.set_cursor_pos x, y
+    x, y = u_position
+    x, y = worldToView x, y
+    @window.move y,x
   end
 
   def updateScroll()
@@ -252,7 +252,6 @@ class Scroller < Page
     if do_redraw
       draw
       $game.redraw
-      #Term.set_cursor_pos x, y
     end
   end
 

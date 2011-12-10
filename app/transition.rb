@@ -34,7 +34,6 @@ class Transition
   def rising_curtain 
     window = Ncurses.newwin 25, 80, 0, 0
     window.color_set Palette::WHITE_ON_BLUE, nil
-    Term.set_cursor_pos 79, 24
     25.times do |y| 
       80.times do |x|
         window.mvaddstr 24 - y, x, '~'
