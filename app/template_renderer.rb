@@ -15,12 +15,17 @@ class Template
 end
 
 class TemplateRenderer
+
   def eval(template_name)
     filename = "data/templates/#{template_name}.erb"
     erb = ERB.new(File.read(filename))
     erb.def_method(Template, 'render()')
     t = Template.new {}
     return t.render
+  end
+
+  def write(window, ch)
+    window.addstr ch
   end
 
   def render(window, template_name)
@@ -50,7 +55,11 @@ class TemplateRenderer
         if ch == '%'
           state = :command
         else
-          window.addstr ch
+          if block_given?
+            yield window, ch
+          else
+            write window, ch
+          end
         end
       end
     end

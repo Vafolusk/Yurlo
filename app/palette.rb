@@ -68,6 +68,7 @@ class Palette
   WHITE_ON_WHITE = 63
 
   def initialize
+    Ncurses.init_color(Ncurses::COLOR_BLUE, 1000, 0, 0)
     Ncurses.init_pair 0, Ncurses::COLOR_BLACK, Ncurses::COLOR_BLACK
     Ncurses.init_pair 1, Ncurses::COLOR_BLACK, Ncurses::COLOR_RED
     Ncurses.init_pair 2, Ncurses::COLOR_BLACK, Ncurses::COLOR_GREEN

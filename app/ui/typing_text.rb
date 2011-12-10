@@ -1,32 +1,49 @@
 module UI
   class TypingText
     def initialize(template_name)
-      tr = TemplateRenderer.new
-      @text = tr.eval template_name
-      @multiline = true
+      @template_name = template_name
+      @multiline = false
     end
 
-    def begin
-      lines = @text.split "\n"
-      lines.each do |line|
-        line.chars.each do |char|
-          printf char
-          STDOUT.flush
-          sleep 0.05
-        end
-        if !@multiline
-          sleep 3
-          Term.cursor_back 1
-          line.size.times do
-            printf ' '
-            STDOUT.flush
-            Term.cursor_back 2
-            sleep 0.005
+    def begin(window, x, y)
+      start_x = x
+      tr = TemplateRenderer.new 
+      skip = false
+      tr.render window, @template_name do |window, ch|
+          window.timeout 0
+
+          in_ch = window.getch
+          if in_ch == 32
+            skip = true
+            $game.log.info 'skipping'
+          end
+
+          window.mvaddstr y, x, ch
+          window.refresh
+          if !skip
+            sleep 0.05
+          end
+        if ch == "\n" 
+          if !@multiline
+            window.timeout -1
+            window.getch
+            window.refresh
+            skip = false
+            x = start_x
+            window.move y, x
+            window.clrtoeol
+            window.refresh
+            x = start_x
+          else
+            x = start_x
+            y += 1
           end
         else
-          puts
+          x += 1
         end
       end
+
+      window.timeout -1
     end
   end
 end

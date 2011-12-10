@@ -3,18 +3,14 @@ class Background < Page
   def initialize
     super 'background'
     @window = Ncurses.newwin 25, 80, 0, 0
-    Term.set_cursor_pos 0,0
-    Term.erase_screen
   end
 
   def begin
-    Term.set_cursor_pos 0, 6
     st = UI::TypingText.new 'history'
-    st.begin
+    st.begin @window, 5,  4
     sleep 1 
 
-    Term.set_cursor_pos 0, 24
-    printf '[b] - Back'
+    @window.mvaddstr 16, 5, '[b] - Back'
   end
 
   def key_handlers

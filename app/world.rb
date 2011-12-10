@@ -1,4 +1,4 @@
-WORLD_WIDTH=128
+WORLD_WIDTH=256
 WORLD_HEIGHT=WORLD_WIDTH
 SEA_LEVEL = 0.5
 
@@ -73,6 +73,7 @@ class World
 
 
   def _createWorld()
+    start_time = Time.now
     @world_data = []
     WORLD_WIDTH.times do |x|
       data = []
@@ -90,6 +91,7 @@ class World
     @u.npc = false
     @u.name="player"
     addEntity(5, 5, @u)
+    $game.log.info "world gen took #{(Time.now - start_time)} secs..."
     #_saveBitmap()
   end
 
