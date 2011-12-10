@@ -66,10 +66,11 @@ class Game
   end
 
   def map
-    #trans = UI::Transition.new
-    #trans.falling_curtain
-    #trans.rising_curtain
+    trans = Transition.new
+    trans.falling_curtain
     push_page Scroller.new
+    trans.rising_curtain
+    redraw
   end
 
   def begin()

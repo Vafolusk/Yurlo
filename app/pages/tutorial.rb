@@ -6,13 +6,13 @@ class Tutorial < Page
   end
   def initialize
     super 'test_template'
-    UI::Transition.new.falling_curtain
-    UI::Transition.new.rising_curtain
+    Transition.new.falling_curtain
+    Transition.new.rising_curtain
     @window = Ncurses.newwin 25, 80, 0, 0
   end
 
   def exit
-    UI::Transition.new.noise 
+    Transition.new.noise 
     $game.log.info 'exiting tutorial'
     $game.pop_page
     $game.push_page Title.new
