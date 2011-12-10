@@ -12,7 +12,7 @@ class Tutorial < Page
   end
 
   def exit
-    UI::Transition.new.noise
+    UI::Transition.new.noise 
     $game.log.info 'exiting tutorial'
     $game.pop_page
     $game.push_page Title.new

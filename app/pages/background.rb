@@ -6,7 +6,7 @@ class Background < Page
   end
 
   def begin
-    st = UI::TypingText.new 'history'
+    st = TypingText.new 'history'
     st.begin @window, 5,  4
     sleep 1 
 
