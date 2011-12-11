@@ -56,9 +56,11 @@ class Scroller < Page
   def draw_debug_box()
       @debug_box.clear
       u_x, u_y = u_position
+      u_vx, u_vy = worldToView(u_x, u_y)
       @debug_box.mvaddstr 0, 0, "u are here:  #{u_x.to_s}, #{u_y.to_s}"
+      @debug_box.mvaddstr 1, 0, "u (view space) : #{u_vx}, #{u_vy}" 
       s = sprintf "cell height: %.4f", @world.get_cell(u_x, u_y).height
-      @debug_box.mvaddstr(1, 0, s)
+      @debug_box.mvaddstr(2, 0, s)
       @debug_box.refresh
   end
 
@@ -70,7 +72,7 @@ class Scroller < Page
 
     if cell.entities.length > 0
       $game.log.info 'entities at ' + x.to_s + ',' + y.to_s
-      @window.color_set(Palette::WHITE_ON_BLACK, nil)
+      @window.color_set(Palette::MAGENTA_ON_BLACK, nil)
       @window.mvaddstr(y, x, '@')
       return
     end
@@ -234,14 +236,14 @@ class Scroller < Page
     x, y = worldToView(u_x, u_y)
 
     do_redraw = false
-    if x == 0
+    if x == -1
       scrollLeft()
       do_redraw = true
     elsif x == @view_width 
       scrollRight()
       do_redraw = true
     end
-    if y == 0
+    if y == -1
       scrollUp()
       do_redraw = true
     elsif y == @view_height
